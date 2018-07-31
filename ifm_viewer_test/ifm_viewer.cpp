@@ -115,9 +115,13 @@ private:
 
 int main(int argc, const char **argv)
 {
+	std::string ifm3d_ip;
+	std::cout << "Please enter the ip of your camera: " << endl;
+	std::cin >> ifm3d_ip;
 	try
 	{
-		auto cam = ifm3d::Camera::MakeShared();
+		//auto cam = ifm3d::Camera::MakeShared();
+		ifm3d::Camera::Ptr cam = std::make_shared<ifm3d::Camera>(ifm3d_ip);
 		IFM3DViewer viewer(cam);
 		viewer.Run();
 	}
