@@ -23,6 +23,7 @@
 #include <ifm3d/camera.h>
 #include <ifm3d/fg.h>
 #include <ifm3d/image.h>
+#include <pcl/io/pcd_io.h>
 
 //==============================
 // Class wrapping the pcl viewer
@@ -33,7 +34,9 @@ class IFM3DViewer
 public:
 	IFM3DViewer(ifm3d::Camera::Ptr cam)
 		: cam_(cam), description_("ifm3d-pcl-viewer")
-	{}
+	{
+		cloud.reset(new pcl::PointCloud<pcl::PointXYZI>);
+	}
 
 	void Run()
 	{
@@ -101,13 +104,16 @@ public:
 			{
 				pclvis_->updatePointCloud(buff->Cloud(), color_handler, "cloud");
 			}
+			cloud = buff->Cloud();
 		} // end: while (...)
+		pcl::PCDWriter writer;
+		writer.write("test.pcd", *cloud);
 	}
 
 private:
 	ifm3d::Camera::Ptr cam_;
 	std::string description_;
-
+	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
 }; // end: IFM3DViewer
 
    //===================================================
@@ -122,6 +128,7 @@ int main(int argc, const char **argv)
 	{
 		//auto cam = ifm3d::Camera::MakeShared();
 		ifm3d::Camera::Ptr cam = std::make_shared<ifm3d::Camera>(ifm3d_ip);
+		 
 		IFM3DViewer viewer(cam);
 		viewer.Run();
 	}
